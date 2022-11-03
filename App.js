@@ -1,13 +1,21 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import ButtonStyle from './ButtonStyle';
 
-const buttons = [
+const buttonsVertical = [
   ['AC', '/'],
   ['7', '8', '9', '*'],
   ['4', '5', '6', '-'],
   ['1', '2', '3', '+'],
   ['0', '.', '='],
+];
+
+const buttonsHorizontal = [
+  ['sqrt', 'x!', 'AC', ' ', ' ', '/'],
+  ['e^x', '10^x', '7', '8', '9', '*'],
+  ['ln', 'log10', '4', '5', '6', '-'],
+  ['e', 'x^2', '1', '2', '3', '+'],
+  ['pi', 'x^3', '0', ' ', '.', '='],
 ];
 
 class App extends Component {
@@ -19,12 +27,19 @@ class App extends Component {
       firstValue: '',
       secondValue: '',
       nextValue: false,
+      orientation: 'portrait',
     };
     this.state = this.initialState;
+
+    Dimensions.addEventListener('change', () => {
+      const {width, height} = Dimensions.get('window');
+      let orientation = width > height ? 'horizontal' : 'portrait';
+      this.setState({orientation: orientation});
+    });
   }
 
-  renderButtons() {
-    let layouts = buttons.map((buttonRows, index) => {
+  renderButtonsVertical() {
+    return buttonsVertical.map((buttonRows, index) => {
       let rowItem = buttonRows.map((buttonItems, buttonIndex) => {
         return (
           <ButtonStyle
@@ -40,7 +55,25 @@ class App extends Component {
         </View>
       );
     });
-    return layouts;
+  }
+
+  renderButtonsHorizontal() {
+    return buttonsHorizontal.map((buttonRows, index) => {
+      let rowItem = buttonRows.map((buttonItems, buttonIndex) => {
+        return (
+          <ButtonStyle
+            value={buttonItems}
+            handleOnPress={this.handleInput.bind(this, buttonItems)}
+            key={'btn-' + buttonIndex}
+          />
+        );
+      });
+      return (
+        <View style={styles.inputRow} key={'row-' + index}>
+          {rowItem}
+        </View>
+      );
+    });
   }
 
   handleInput = input => {
@@ -49,7 +82,13 @@ class App extends Component {
 
     switch (input) {
       case 'AC':
-        this.setState(this.initialState);
+        this.setState({
+          displayValue: '0',
+          operator: null,
+          firstValue: '',
+          secondValue: '',
+          nextValue: false,
+        });
         break;
 
       case '0':
@@ -103,7 +142,159 @@ class App extends Component {
           });
         }
         break;
-
+      case 'sqrt':
+        let resSqrt = Math.sqrt(displayValue).toFixed(3);
+        this.setState({
+          displayValue: displayValue === 0 ? input : resSqrt,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resSqrt,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resSqrt,
+          });
+        }
+        break;
+      case 'x!':
+        let res = 1;
+        for (let i = 1; i <= displayValue; i++) {
+          res = res * i;
+        }
+        this.setState({
+          displayValue: displayValue === '0' ? input : res,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + res,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + res,
+          });
+        }
+        break;
+      case 'e^x':
+        let resEp = Math.pow(2.71, displayValue).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resEp,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resEp,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resEp,
+          });
+        }
+        break;
+      case '10^x':
+        let resPow10 = Math.pow(10, displayValue).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resPow10,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resPow10,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resPow10,
+          });
+        }
+        break;
+      case 'ln':
+        let resLogN = Math.log(displayValue).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resLogN,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resLogN,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resLogN,
+          });
+        }
+        break;
+      case 'log10':
+        let resLog10 = Math.log10(displayValue).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resLog10,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resLog10,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resLog10,
+          });
+        }
+        break;
+      case 'e':
+        input = 2.71;
+        this.setState({
+          displayValue: displayValue === '0' ? input : displayValue + input,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + input,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + input,
+          });
+        }
+        break;
+      case 'x^2':
+        let resPow2 = Math.pow(displayValue, 2).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resPow2,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resPow2,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resPow2,
+          });
+        }
+        break;
+      case 'pi':
+        (input = 3.14),
+          this.setState({
+            displayValue: displayValue === '0' ? input : displayValue + input,
+          });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + input,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + input,
+          });
+        }
+        break;
+      case 'x^3':
+        let resPow3 = Math.pow(displayValue, 3).toFixed(3);
+        this.setState({
+          displayValue: displayValue === '0' ? input : resPow3,
+        });
+        if (!nextValue) {
+          this.setState({
+            firstValue: firstValue + resPow3,
+          });
+        } else {
+          this.setState({
+            secondValue: secondValue + resPow3,
+          });
+        }
+        break;
       case '=':
         let formatOperator =
           operator === '*' ? '*' : operator === '/' ? '/' : operator;
@@ -121,15 +312,29 @@ class App extends Component {
   };
 
   render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.result}>
-          <Text style={styles.resultText}>{this.state.displayValue}</Text>
+    if (this.state.orientation === 'portrait') {
+      return (
+        <View style={styles.container}>
+          <View style={styles.result}>
+            <Text style={styles.resultText}>{this.state.displayValue}</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            {this.renderButtonsVertical()}
+          </View>
         </View>
-
-        <View style={styles.inputContainer}>{this.renderButtons()}</View>
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          <View style={styles.result}>
+            <Text style={styles.resultText}>{this.state.displayValue}</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            {this.renderButtonsHorizontal()}
+          </View>
+        </View>
+      );
+    }
   }
 }
 
