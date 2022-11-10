@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import ButtonStyle from './ButtonStyle';
+import SplashScreen from 'react-native-splash-screen';
+
 
 const buttonsVertical = [
   ['AC', '/'],
@@ -37,7 +39,9 @@ class App extends Component {
       this.setState({orientation: orientation});
     });
   }
-
+  componentDidMount() {
+    SplashScreen.hide();
+  }
   renderButtonsVertical() {
     return buttonsVertical.map((buttonRows, index) => {
       let rowItem = buttonRows.map((buttonItems, buttonIndex) => {
