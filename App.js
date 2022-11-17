@@ -3,7 +3,6 @@ import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import ButtonStyle from './ButtonStyle';
 import SplashScreen from 'react-native-splash-screen';
 
-
 const buttonsVertical = [
   ['AC', '/'],
   ['7', '8', '9', '*'],
@@ -26,9 +25,6 @@ class App extends Component {
     this.initialState = {
       displayValue: '0',
       operator: null,
-      firstValue: '',
-      secondValue: '',
-      nextValue: false,
       orientation: 'portrait',
     };
     this.state = this.initialState;
@@ -81,20 +77,15 @@ class App extends Component {
   }
 
   handleInput = input => {
-    const {displayValue, operator, firstValue, secondValue, nextValue} =
-      this.state;
+    const {displayValue, operator} = this.state;
 
     switch (input) {
       case 'AC':
         this.setState({
           displayValue: '0',
           operator: null,
-          firstValue: '',
-          secondValue: '',
-          nextValue: false,
         });
         break;
-
       case '0':
       case '1':
       case '2':
@@ -108,26 +99,16 @@ class App extends Component {
         this.setState({
           displayValue: displayValue === '0' ? input : displayValue + input,
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + input,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + input,
-          });
-        }
         break;
       case '+':
       case '-':
       case '*':
       case '/':
         this.setState({
-          nextValue: true,
           operator: input,
           displayValue:
             (operator !== null
-              ? displayValue.substr(0, displayValue.length - 1)
+              ? displayValue.substr(0, displayValue.length)
               : displayValue) + input,
         });
         break;
@@ -136,30 +117,11 @@ class App extends Component {
         this.setState({
           displayValue: dot !== '.' ? displayValue + input : displayValue,
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + input,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + input,
-          });
-        }
         break;
       case 'sqrt':
-        let resSqrt = Math.sqrt(displayValue).toFixed(3);
         this.setState({
-          displayValue: displayValue === 0 ? input : resSqrt,
+          displayValue: displayValue + 'sqrt',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resSqrt,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resSqrt,
-          });
-        }
         break;
       case 'x!':
         let res = 1;
@@ -167,149 +129,57 @@ class App extends Component {
           res = res * i;
         }
         this.setState({
-          displayValue: displayValue === '0' ? input : res,
+          displayValue: displayValue === '0' ? input : displayValue + '!',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + res,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + res,
-          });
-        }
         break;
       case 'e^x':
         let resEp = Math.pow(2.71, displayValue).toFixed(3);
         this.setState({
           displayValue: displayValue === '0' ? input : resEp,
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resEp,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resEp,
-          });
-        }
         break;
       case '10^x':
-        let resPow10 = Math.pow(10, displayValue).toFixed(3);
         this.setState({
-          displayValue: displayValue === '0' ? input : resPow10,
+          displayValue: displayValue === '0' ? input : displayValue + '^10',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resPow10,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resPow10,
-          });
-        }
         break;
       case 'ln':
-        let resLogN = Math.log(displayValue).toFixed(3);
         this.setState({
-          displayValue: displayValue === '0' ? input : resLogN,
+          displayValue: displayValue + 'ln',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resLogN,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resLogN,
-          });
-        }
         break;
       case 'log10':
-        let resLog10 = Math.log10(displayValue).toFixed(3);
         this.setState({
-          displayValue: displayValue === '0' ? input : resLog10,
+          displayValue: displayValue + 'log10',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resLog10,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resLog10,
-          });
-        }
         break;
       case 'e':
         input = 2.71;
         this.setState({
           displayValue: displayValue === '0' ? input : displayValue + input,
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + input,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + input,
-          });
-        }
         break;
       case 'x^2':
-        let resPow2 = Math.pow(displayValue, 2).toFixed(3);
         this.setState({
-          displayValue: displayValue === '0' ? input : resPow2,
+          displayValue: displayValue === '0' ? input : displayValue + '^2',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resPow2,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resPow2,
-          });
-        }
         break;
       case 'pi':
-        (input = 3.14),
-          this.setState({
-            displayValue: displayValue === '0' ? input : displayValue + input,
-          });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + input,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + input,
-          });
-        }
+        input = 3.14;
+        this.setState({
+          displayValue: displayValue === '0' ? input : displayValue + input,
+        });
         break;
       case 'x^3':
-        let resPow3 = Math.pow(displayValue, 3).toFixed(3);
         this.setState({
-          displayValue: displayValue === '0' ? input : resPow3,
+          displayValue: displayValue === '0' ? input : displayValue + '^3',
         });
-        if (!nextValue) {
-          this.setState({
-            firstValue: firstValue + resPow3,
-          });
-        } else {
-          this.setState({
-            secondValue: secondValue + resPow3,
-          });
-        }
         break;
       case '=':
-        let formatOperator =
-          operator === '*' ? '*' : operator === '/' ? '/' : operator;
         // eslint-disable-next-line no-eval
-        let result = eval(firstValue + formatOperator + secondValue);
+        const result = eval(displayValue);
         this.setState({
           displayValue: result % 1 === 0 ? result : result.toFixed(3),
-          firstValue: result % 1 === 0 ? result : result.toFixed(3),
-          secondValue: '',
-          operator: null,
-          nextValue: false,
         });
         break;
     }
