@@ -25,6 +25,8 @@ class App extends Component {
     this.initialState = {
       displayValue: '0',
       operator: null,
+      lastValue: '0',
+      operatorFlag: false,
       orientation: 'portrait',
     };
     this.state = this.initialState;
@@ -77,13 +79,15 @@ class App extends Component {
   }
 
   handleInput = input => {
-    const {displayValue, operator} = this.state;
+    const {displayValue, operator, lastValue, operatorFlag} = this.state;
 
     switch (input) {
       case 'AC':
         this.setState({
           displayValue: '0',
           operator: null,
+          lastValue: '0',
+          operatorFlag: false,
         });
         break;
       case '0':
@@ -98,6 +102,8 @@ class App extends Component {
       case '9':
         this.setState({
           displayValue: displayValue === '0' ? input : displayValue + input,
+          lastValue: lastValue+input,
+          operatorFlag: false,
         });
         break;
       case '+':
@@ -106,6 +112,8 @@ class App extends Component {
       case '/':
         this.setState({
           operator: input,
+          operatorFlag: true,
+          lastValue: '0',
           displayValue:
             (operator !== null
               ? displayValue.substr(0, displayValue.length)
@@ -119,68 +127,75 @@ class App extends Component {
         });
         break;
       case 'sqrt':
-        this.setState({
-          displayValue: displayValue + 'sqrt',
-        });
+            let resSqrt = Math.sqrt(lastValue).toFixed(2)
+              this.setState({
+                displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resSqrt
+              })
         break;
       case 'x!':
         let res = 1;
-        for (let i = 1; i <= displayValue; i++) {
+        for (let i = 1; i <= lastValue; i++) {
           res = res * i;
         }
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + '!',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + res,
         });
         break;
       case 'e^x':
-        let resEp = Math.pow(2.71, displayValue).toFixed(3);
+        let resEp = Math.pow(2.71, lastValue).toFixed(2);
         this.setState({
-          displayValue: displayValue === '0' ? input : resEp,
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resEp,
         });
         break;
       case '10^x':
+        let resPow10 = Math.pow(10, lastValue).toFixed(2)
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + '^10',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resPow10,
         });
         break;
       case 'ln':
+        let resLogN = Math.log(lastValue).toFixed(2)
         this.setState({
-          displayValue: displayValue + 'ln',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resLogN,
         });
         break;
       case 'log10':
+        let resLog10 = Math.log10(lastValue).toFixed(2)
         this.setState({
-          displayValue: displayValue + 'log10',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resLog10,
         });
         break;
       case 'e':
         input = 2.71;
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + input,
+          displayValue: displayValue === '0' ? input : displayValue + '*' +input,
         });
         break;
       case 'x^2':
+        let resPow2 = Math.pow(lastValue, 2).toFixed(2)
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + '^2',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resPow2,
         });
         break;
       case 'pi':
         input = 3.14;
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + input,
+          displayValue: displayValue === '0' ? input : displayValue + '*' +input,
         });
         break;
       case 'x^3':
+        let resPow3 = Math.pow(lastValue, 3).toFixed(2)
         this.setState({
-          displayValue: displayValue === '0' ? input : displayValue + '^3',
+          displayValue: (displayValue === '0') ? '0' : displayValue.substring(0,(displayValue.length-lastValue.length+1)) + resPow3,
         });
         break;
       case '=':
-        // eslint-disable-next-line no-eval
-        const result = eval(displayValue);
-        this.setState({
-          displayValue: result % 1 === 0 ? result : result.toFixed(3),
-        });
+        if(operatorFlag === false){
+            let result = eval(displayValue);
+                this.setState({
+                  displayValue: result % 1 === 0 ? result : result.toFixed(2),
+                });
+            }
         break;
     }
   };
